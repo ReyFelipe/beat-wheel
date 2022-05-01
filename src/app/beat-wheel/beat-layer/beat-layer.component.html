@@ -1,0 +1,3 @@
+<div class="pie d-flex align-items-center justify-content-center" (click)="select()"
+    [ngClass]="{'spin': spin, 'active': active, 'grayscale': instrument.mute}" [ngStyle]="{'background-image': colours, 'opacity': instrument.volume/10, 'animation-duration': 14.4/instrument.tempo + 's'}">
+</div>

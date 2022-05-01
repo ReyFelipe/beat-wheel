@@ -1,0 +1,25 @@
+.pie {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.pie:hover {
+    cursor: pointer;
+    border: 2px solid white;
+}
+.pie.active {
+    border: 4px solid orange;
+}
+
+.spin { 
+    animation-name: rotate;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+.grayscale {
+    filter: grayscale(100%);
+}
+@keyframes rotate{
+    from{ transform: rotate(360deg); }
+    to{ transform: rotate(-360deg); }
+}

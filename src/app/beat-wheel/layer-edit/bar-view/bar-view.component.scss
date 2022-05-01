@@ -1,0 +1,163 @@
+%textButton {
+    background: none;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.hidden {
+    opacity: 0;
+    z-index: -5;
+}
+.back, .clear {
+    @extend %textButton;
+    left: 10%;
+}
+.back:hover {
+    color: orange;
+}
+.clear:hover {
+    color: red;
+}
+
+.graph {
+    width: 80%;
+    bottom: 27%;
+    margin-left: 0.5%;
+    z-index: 30;
+    .timeLine {
+        border-left: 2px solid white;
+        height: 40px;
+        bottom: 0;
+    }
+    .line {
+        border-bottom: 2px solid white;
+        top: 11px;
+    }   
+    .marker {
+        border-right: 2px solid white;
+        height: 15px;
+        width: 8.3333333%;
+    }
+    .marker.beat {
+        height: 25px;
+    }
+}
+
+
+.notes {
+    bottom: 30%;
+    width: 80%;
+    .note {
+        bottom: 0;
+        cursor: move;
+        border: 0.5px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .drag {
+            z-index: 20;
+            background-color: orange;
+        }
+        .left-drag, .right-drag {
+            height: 5px;
+            width: 15px;
+            top: 50%;
+            cursor: ew-resize;
+        }
+        .left-drag.hidden, .right-drag.hidden {
+            opacity: 0;
+        }
+        .top-drag {
+            width: 5px;
+            height: 15px;
+            // left: 45%;
+            cursor: ns-resize;
+        }
+    }
+    .note:hover {
+        border: 2px solid white;
+    }
+    .note.active {
+        border: 3px solid orange;
+    }
+    .note.dimmed {
+        opacity: 0.5;
+    }
+    .note.dimmed:hover {
+        border: none;
+    }
+    .note.invisible {
+        opacity: 0;
+    }
+    .addNote {
+        width: 15px;
+        height: 15px;
+        bottom: 50px;
+        background-color: rgb(0, 255, 0);
+        border-radius: 50%;
+        cursor: pointer;
+        .fas {
+            color: white;
+            font-size: 13px;
+        }
+    }
+    .addNote.dragging {
+        z-index: -1;
+    }
+    .addNote:hover {
+        width: 20px;
+        height: 20px;
+        .fas {
+            font-size: 15px;
+        }
+    }
+}
+
+.controls {
+    padding: 0 7.5% 15% 7.5%;
+    margin-top: 5%;
+    .delete {
+        @extend %textButton;
+    }
+    .delete:hover {
+        color: red;
+    }
+
+    .spot {
+        width: 2em;
+        height: 2em;
+        box-sizing: border-box;
+        margin: 2px;
+        border: none;
+        border-radius: 50%;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .spot:hover {
+        box-sizing: border-box;
+        border: 2px solid white;
+    }
+    .spot.active {
+        border: 2px solid orange;
+    }
+}
+
+.loop { 
+    animation-name: timeline;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+@keyframes timeline {
+    0% {
+        left: 0;
+    }
+    100% {
+        left: 100%;
+    }
+}

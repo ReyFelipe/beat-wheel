@@ -1,0 +1,20 @@
+<div class="background d-flex justify-content-center align-items-center position-absolute h-100 w-100">
+</div>
+
+<div class="box d-flex flex-column p-5 justify-content-center align-items-center position-fixed h-auto w-50">
+    <ng-content *ngIf="page==1" select=".mp1" class="container"></ng-content>
+    <ng-content *ngIf="page==2" select=".mp2" class="container"></ng-content>
+    <ng-content *ngIf="page==3" select=".mp3" class="container"></ng-content>
+
+    <div class="footer d-flex justify-content-between">
+        <button *ngIf="!(page==1) && multipage" class="btn mbtn btn-primary whiteBtn m-2" (click)="page=page-1">
+            Back
+        </button>
+        <button *ngIf="!(page==3) && multipage" class="btn mbtn btn-primary whiteBtn m-2" (click)="page=page+1">
+            Continue
+        </button>
+        <ng-content *ngIf="page==3 || !multipage" select=".mBtnClose"></ng-content>
+    </div>
+
+</div>
+    

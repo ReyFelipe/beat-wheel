@@ -1,0 +1,68 @@
+<div class="w-100 h-100 d-flex justify-content-center">
+
+    <div *ngIf="editing" class="d-flex w-75 justify-content-between position-absolute">
+        <button class="back" (click)="back()">Back</button>
+        <button class="clear" (click)="clear()">Clear</button>
+    </div>
+
+    <div class="graph position-absolute d-flex">
+
+        <div class="timeLine position-absolute" [ngClass]="{'loop': loop}" [ngStyle]="{'animation-duration': 7.2/instrument.tempo + 's'}"></div>
+
+        <div class="line position-absolute w-100"></div>
+        <div class="d-flex flex-row align-items-center w-100">
+            <span class="marker" *ngFor="let m of markers" [ngClass]="{'beat': m%4==0}"></span>
+        </div>
+
+    </div>
+
+    <div #notes *ngIf="showNotes" class="notes position-absolute h-50">
+
+        <div *ngFor="let note of instrument.notes" class="note position-absolute" [ngClass]="{'active': note==activeNote, 'dimmed': dragging && note!=activeNote}" [ngStyle]="{'height': 'calc(' + 10*note.volume + '% - ' + (note==activeNote ? topDrag : 0) + 'px)', 
+        'width': 'calc(' + 8.3333333*note.length + '% + ' + (note==activeNote ? rightDrag-leftDrag : 0) + 'px)', 'left': 'calc(' + 8.3333333*note.index + '% + ' + (note==activeNote ? leftDrag : 0) + 'px)', 'background-color': instrument.colours[note.noteIndex]}"
+        cdkDrag cdkDragBoundary=".notes" cdkDragLockAxis="x" (cdkDragStarted)="noteDragStart(note)" (cdkDragEnded)="noteDragEnd($event, note)" (click)="setActiveNote(note)">
+
+            <span *ngIf="note==activeNote && canChangeSize" class="left-drag-boundary position-absolute" [ngStyle]="{'width': (100+(40/note.length))/(note.length)*(note.index+note.length-1) + '%', 'right': 100/note.length-10/note.length + '%'}">
+                <span (click)="$event.stopPropagation()" class="drag left-drag position-absolute" *ngIf="note==activeNote" [ngClass]="{'hidden': dragging}" [ngStyle]="{'right': (note.index==0 && note.length==1 ? 100 : (note.length-1)/(note.index+note.length-1)*100)-note.length/2 + '%'}"
+                cdkDrag cdkDragBoundary=".left-drag-boundary" cdkDragLockAxis="x" (cdkDragStarted)="dragging=true; this.activeNote = note" (cdkDragEnded)="leftDragEnd($event, note)" (cdkDragMoved)="leftDragMove($event, note)"></span>
+            </span>
+
+            <span *ngIf="note==activeNote && canChangeSize" class="right-drag-boundary position-absolute" [ngStyle]="{'width': (100+(40/note.length))/(note.length)*(11-note.index) + '%', 'left': 100/note.length-10/note.length + '%'}">
+                <span class="drag right-drag position-absolute" *ngIf="note==activeNote" [ngClass]="{'hidden': dragging}" [ngStyle]="{'left': (note.length-1)/(11-note.index)*100-note.length/2 + '%'}"
+                cdkDrag cdkDragBoundary=".right-drag-boundary" cdkDragLockAxis="x" (cdkDragStarted)="dragging=true" (cdkDragEnded)="rightDragEnd($event, note)" (cdkDragMoved)="rightDragMove($event, note)"></span>
+            </span>
+
+            <span *ngIf="note==activeNote" class="top-drag-boundary w-100 position-absolute" [ngStyle]="{'height': box.height-box.height/10 + 'px', 'bottom': box.height/10 + 'px'}">
+                <span class="drag top-drag position-absolute" *ngIf="note==activeNote" [ngStyle]="{'top': box.height/10*(10-note.volume)-5 + 'px', 'left': note.length<3 ? '45%' : '50%'}"
+                cdkDrag cdkDragBoundary=".top-drag-boundary" cdkDragLockAxis="y" (cdkDragStarted)="dragging=true" (cdkDragEnded)="topDragEnd($event, note)" (cdkDragMoved)="topDragMove($event, note)"></span>
+            </span>
+
+        </div>
+        
+        <div *ngFor="let space of spaceIndexes" class="addNote position-absolute d-flex justify-content-center align-items-center" 
+        [ngClass]="{'dragging': dragging}" [ngStyle]="{'left': 2.5+8.3333333*space + '%'}" (click)="addNote(space)"> 
+            <i class="fas fa-plus"></i>
+        </div>
+
+    </div>
+
+    <div *ngIf="controls" class="controls h-100 w-100 d-flex justify-content-between align-items-end">
+        
+        <button class="delete mt-1" (click)="deleteNote()">Delete</button>
+        
+        <div *ngIf="noteOptions" class="noteSelect d-flex flex-row align-items-center">
+            <span class="p-1">Note</span>
+            <button *ngFor="let colour of noteColours" [ngStyle]="{'background-color': colour}" [ngClass]="{'active': isNote(colour)}" 
+            (click)="changeNote(colour)" class="spot"></button>
+        </div>
+
+    </div>
+
+
+</div>
+
+<!-- CDK Drag + Resize
+https://stackblitz.com/edit/angular-ivy-brtlte?file=src%2Fapp%2Fresizable%2Fresizable.component.ts
+
+Documentation
+https://v7.material.angular.io/cdk/drag-drop/api -->

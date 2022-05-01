@@ -1,0 +1,28 @@
+.background {
+    background-color: black;
+    opacity: 0.7;
+    z-index: 30;
+    top: 0;
+}
+
+.box {
+    z-index: 31;
+    background-color: rgb(49, 49, 49);
+    border: 3px solid white;
+    border-radius: 40px;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.whiteBtn {
+    background-color: white;
+    color: black;
+    border: none;
+}
+
+.whiteBtn:hover, .whiteBtn:active {
+    background-color: orange;
+    color: white;
+}

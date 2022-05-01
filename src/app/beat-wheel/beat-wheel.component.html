@@ -1,0 +1,111 @@
+<a class="finishLink" (click)="stop()" href="https://forms.office.com/Pages/ResponsePage.aspx?id=i9hQcmhLKUW-RNWaLYpvlCXWBXp261NJvh8j9BmJLtJUQUpXT1VTOFBMTjlKMkZCWTRTSEdFMUwwRS4u" target="_blank" rel="noopener noreferrer">
+    <button type="button" class="position-absolute finish btn btn-primary whiteBtn m-2">Finish</button>
+</a>
+<button type="button" (click)="controlModal=true" class="position-absolute btn controlModalBtn btn-primary whiteBtn m-2">Controls</button>
+
+
+<div *ngIf="showAll" class="row h-100">
+    <div class="display d-flex mt-3 col-6 w-50 h-100 align-items-center justify-content-center">
+
+        <div class="topControls position-absolute w-50 d-flex flex-row align-items-center justify-content-between">
+            <div class="d-flex flex-column m-5">
+                <button type="button" [ngClass]="{'active': spin}" class="btn btn-primary controlBtn m-2" (click)="spin ? stop() : playSounds()">{{spin ? 'Stop' : 'Play'}} 
+                    <i *ngIf="!spin" class="mx-1 fas fa-play"></i><i *ngIf="spin" class="mx-1 fas fa-stop"></i>
+                </button>
+                <div class="d-flex flex-row">
+                    <button type="button" class="btn btn-primary whiteBtn m-2" (click)="clear()">Clear</button>
+                    <button type="button" class="btn btn-primary whiteBtn m-2" (click)="reset()">Randomise</button>
+                </div>
+            </div>
+
+            <div class="scaleControl">
+                Scale
+                <button *ngFor="let s of scales" [ngClass]="{'active': scaleIndex+1==s}" 
+                (click)="changeScale(s)" class="scale">{{s}}</button>
+            </div>
+        </div>
+
+
+        <div class="line d-flex position-absolute"></div>
+        <div *ngFor="let instrument of instruments" class="wheel d-flex align-items-center justify-content-center">
+            <app-beat-layer [instrument]="instrument" [activeInstrument]="instrumentChange" [spin]="spin" (selectInstrument)="selectInstrument(instrument)"
+            [notesChanged]="notesChanged" class="layer d-flex position-absolute" [ngStyle]="calculatePieSize(instrument)"></app-beat-layer>
+        </div>
+
+        <div class="chooseInstrument position-absolute w-100 d-flex flex-row justify-content-center align-items-center">
+            <button *ngFor="let instrument of instruments" class="btn mx-3 instrumentBtn" (click)="selectInstrument(instrument)"
+            [ngClass]="{'active': instrument == activeInstrument}" [ngStyle]="{'color': (instrument.name=='808' || instrument.name=='Synth') ? instrument.colours[2] : instrument.colours[1]}">
+                {{instrument.name}}
+            </button>
+        </div>
+    </div>
+
+    <div *ngFor="let instrument of instruments" [ngClass]="{'hidden': instrument != activeInstrument}" class="edit d-flex mt-3 col-6 w-50 h-100 align-items-center justify-content-center">
+        <app-layer-edit class="w-100 h-100" [instrument]="instrument" [instrumentChange]="instrumentChange" (notesChanged)="notesChanged.emit()"
+        [spin]="spin" [clearAll]="clearAll" [editing]="editing" (editActive)="editing=!editing" [solo]="solo" (soloActive)="soloActive(instrument)"></app-layer-edit>
+    </div>
+</div>
+
+
+<app-modal *ngIf="modalOpen" [multipage]="true">
+    <div class="mp1 text-center">
+        <h1 class="mh1">Beat Wheel</h1>
+        <h2 class="mh2 my-3">Overview</h2>
+        <p class="mp">Thank-you for taking part in my final year research project! The purpose of this project is to design an application with the potential to remove barriers to entry 
+        for creating digital music. 
+        <p>Feel free to play around for as long as you want, ideally until you've made a track that you're happy with.
+        Click the 'Finish' button in the bottom right corner when you're ready, and you'll be taken to a brief questionnaire. Its purpose is to gather
+        some general information about your experience with the beat maker, mainly focusing on how much you enjoyed it, and how easy it was to use.</p>
+        <p>The questionnaire will be completely anonymous, and the answers obtained from research participants will be included in the project report. 
+        Your involvement is of course voluntary, and you can choose to stop at any time without completing the questionnaire.</p>
+    </div>
+
+    <div class="mp2 text-center">
+        <h2 class="mh2 my-3">Controls</h2>
+        <p class="mp">You can return to this section at any point by clicking 'Controls' in the bottom right corner,
+            so you can feel free to play around a bit and then come back if you need to.
+        </p>
+        <p class="mp">Click 'Play' to start the music loop. If for any reason the music falls out of sync with the notes in the view,
+        click 'Stop' then 'Play' again to re-align them. </p>
+        <p class="mp">The circles on the left represent 5 instruments you would commonly hear in a trap beat. From the center: kick, 808, snare, hi-hat, synth.
+        Click any circle (or its label below) to view it on the right side, where you can drag the wheel to change its pitch/fade, or change the individual 
+        notes by clicking 'Edit'. Clicking 'Solo' will isolate that instrument, muting all others.</p>
+        <p class="mp">In the bar graph view, click on a note to select it. Drag the bar left/right to
+            change its position. Drag the top marker up/down to change the note's volume.
+            If the instrument is '808' or 'Synth', you can use the markers on the left and right to change the note's length.
+            These two instruments also allow you to change the sound of the note by clicking the circles next to 'Note' underneath the graph. 
+        </p>
+    </div>
+
+    <div class="mp3 text-center">
+        <h2 class="mh3">Consent</h2>
+        <p class="my-4">I consent to participating in this research project<input id="checkbox1" class="mx-3" type="checkbox" name="consent1" [(ngModel)]="consent1"></p>
+        <p class="my-4">I consent to my questionnaire answers being used anonymously in the project report<input id="checkbox2" class="mx-3" type="checkbox" name="consent2" [(ngModel)]="consent2"></p>
+    </div>
+
+    <button type="button" class="btn mbtnClose btn-primary whiteBtn m-2" (click)="modalOpen=false" [disabled]="!(consent1 && consent2)">Start</button>
+</app-modal>
+
+
+
+<app-modal *ngIf="controlModal">
+    <div class="mp1 text-center">
+        <h2 class="mh2 my-3">Controls</h2>
+
+        <p class="mp">Click 'Play' to start the music loop. If for any reason the music falls out of sync with the notes in the view,
+        click 'Stop' then 'Play' again to re-align them. </p>
+
+        <p class="mp">The circles on the left represent 5 instruments you would commonly hear in a trap beat. From the center: kick, 808, snare, hi-hat, synth.
+        Click any circle (or its label below) to view it on the right side, where you can drag the wheel to change its pitch/fade, or change the individual 
+        notes by clicking 'Edit'. Clicking 'Solo' will isolate that instrument, muting all others.</p>
+
+        <p class="mp">In the bar graph view, click on a note to select it. Drag the bar left/right to
+            change its position. Drag the top marker up/down to change the note's volume.
+            If the instrument is '808' or 'Synth', you can use the markers on the left and right to change the note's length.
+            These two instruments also allow you to change the sound of the note by clicking the circles next to 'Note' underneath the graph. 
+        </p>
+    </div>
+
+    <button type="button" class="btn mbtnClose btn-primary whiteBtn m-2" (click)="controlModal=false">Continue</button>
+
+</app-modal>
