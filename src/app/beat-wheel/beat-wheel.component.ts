@@ -159,16 +159,19 @@ export class BeatWheelComponent implements OnInit {
   }
 
   
-  sampleLoader(url: string, context: AudioContext, callback: CallableFunction) {
-    var request = new XMLHttpRequest();
-    request.open('get', url, true);
-    request.responseType = 'arraybuffer';
-    request.onload = function() {
-        context.decodeAudioData(request.response, (buffer: AudioBuffer) =>  {
-            callback(buffer);
-        });
-    };
-    request.send();
+  async sampleLoader(url: string, context: AudioContext, callback: CallableFunction) {
+    // var fileInput = $(url);
+    // var request = new XMLHttpRequest();
+    // request.open('get', url, true);
+    // request.responseType = 'arraybuffer';
+    // request.onload = function() {
+    var response = await fetch(url);
+    var data = await response.arrayBuffer();
+    context.decodeAudioData(data, (buffer: AudioBuffer) =>  {
+        callback(buffer);
+    });
+    // };
+    // request.send();
   };
 
   changeScale(s: number) {
