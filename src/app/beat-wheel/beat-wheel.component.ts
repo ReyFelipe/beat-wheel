@@ -23,7 +23,7 @@ export class BeatWheelComponent implements OnInit {
   instruments: Array<Instrument> = []
   activeInstrument: Instrument = new Instrument;
   bpm: number = 100;
-  context: AudioContext = new AudioContext;
+  context: AudioContext = new window.AudioContext;
   modalOpen: boolean = true;
   controlModal: boolean = false;
   consent1: boolean = false;
@@ -43,10 +43,11 @@ export class BeatWheelComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.scaleIndex = Math.floor(Math.random()*3);
     for (let i=0; i<this.instrumentNames.length; i++) {
       var newInstrument = new Instrument();
       newInstrument.name = this.instrumentNames[i];
-      newInstrument.scaleIndex = this.scaleIndex = Math.floor(Math.random()*3);
+      newInstrument.scaleIndex = this.scaleIndex;
       newInstrument.colours = this.instrumentColours[i];
       newInstrument.volume = Math.floor(Math.random()*4)+7;
       newInstrument.tempo = Math.floor(Math.random()*3)+1;
@@ -65,7 +66,7 @@ export class BeatWheelComponent implements OnInit {
     if (this.spin) {
       this.spin = false;
       clearInterval(this.loop);
-      this.context = new AudioContext;
+      this.context = new window.AudioContext;
       this.playSounds();
     }   
   }
@@ -86,14 +87,14 @@ export class BeatWheelComponent implements OnInit {
     if (this.spin) {
       this.spin = false;
       clearInterval(this.loop);
-      this.context = new AudioContext;
+      this.context = new window.AudioContext;
     }
   }
 
   stop() {
     this.spin = false;
     clearInterval(this.loop);
-    this.context = new AudioContext;
+    this.context = new window.AudioContext;
   }
 
   reposition() {
@@ -103,6 +104,9 @@ export class BeatWheelComponent implements OnInit {
 
   playSounds() {
     this.spin = true;
+    if (this.context.state === 'suspended') {
+      this.context.resume();
+    }
     setInterval(this.reposition, 7200);
     this.sampleLoader('../../assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
       var context = this.context;

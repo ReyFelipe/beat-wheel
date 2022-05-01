@@ -14,16 +14,15 @@ export class HiHat {
         // Setup
         var source = this.context.createBufferSource();
         source.buffer = this.buffer;
-        source.connect(this.context.destination);
+        source.playbackRate.value = 0.75+0.05*pitch;
 
         var sampleEnvelope = this.context.createGain()
-        source.playbackRate.value = 0.75+0.05*pitch;
         source.connect(sampleEnvelope);
         sampleEnvelope.connect(this.context.destination)
-        
+         
         // Trigger
         sampleEnvelope.gain.setValueAtTime(volume, time);
-        sampleEnvelope.gain.linearRampToValueAtTime(volume*0.001, time);
+        sampleEnvelope.gain.linearRampToValueAtTime(volume*0.001, time+0.28-0.025*fade);
         source.start(time);
     }    
 }
