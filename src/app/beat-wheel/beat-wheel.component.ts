@@ -23,7 +23,7 @@ export class BeatWheelComponent implements OnInit {
   instruments: Array<Instrument> = []
   activeInstrument: Instrument = new Instrument;
   bpm: number = 100;
-  context: AudioContext = new window.AudioContext;
+  context: any;
   modalOpen: boolean = true;
   controlModal: boolean = false;
   consent1: boolean = false;
@@ -66,7 +66,7 @@ export class BeatWheelComponent implements OnInit {
     if (this.spin) {
       this.spin = false;
       clearInterval(this.loop);
-      this.context = new window.AudioContext;
+      this.context = new (window['AudioContext'])();
       this.playSounds();
     }   
   }
@@ -87,14 +87,14 @@ export class BeatWheelComponent implements OnInit {
     if (this.spin) {
       this.spin = false;
       clearInterval(this.loop);
-      this.context = new window.AudioContext;
+      this.context = new (window['AudioContext'])();
     }
   }
 
   stop() {
     this.spin = false;
     clearInterval(this.loop);
-    this.context = new window.AudioContext;
+    this.context = new (window['AudioContext'])();
   }
 
   reposition() {
@@ -104,9 +104,8 @@ export class BeatWheelComponent implements OnInit {
 
   playSounds() {
     this.spin = true;
-    if (this.context.state === 'suspended') {
-      this.context.resume();
-    }
+    this.context = new (window['AudioContext'])();
+    // this.context.resume();
     setInterval(this.reposition, 7200);
     this.sampleLoader('../../assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
       var context = this.context;
