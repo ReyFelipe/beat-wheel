@@ -50,7 +50,9 @@ export class BarViewComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.box = this.notesBox.nativeElement.getBoundingClientRect()
+    setTimeout(()=>{
+      this.box = this.notesBox.nativeElement.getBoundingClientRect()
+    }, 0);
     this.clearAll.subscribe(i => {
       this.calculateSpaces();
     });
@@ -89,7 +91,9 @@ export class BarViewComponent implements OnInit, AfterViewInit {
   }
 
   setActiveNote(note: InstrumentNote) {
-    this.box = this.notesBox.nativeElement.getBoundingClientRect()
+    setTimeout(()=>{
+      this.box = this.notesBox.nativeElement.getBoundingClientRect()
+    }, 0);
     if (this.dragging) {
       return;
     }
