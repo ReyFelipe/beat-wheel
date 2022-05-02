@@ -107,7 +107,7 @@ export class BeatWheelComponent implements OnInit {
     this.context = new (window['AudioContext'])();
     // this.context.resume();
     setInterval(this.reposition, 7200);
-    this.sampleLoader('src/assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
+    this.sampleLoader('assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
       var context = this.context;
       var instrumentNames = this.instrumentNames;
       var instruments = this.instruments;
