@@ -89,6 +89,7 @@ export class BarViewComponent implements OnInit, AfterViewInit {
   }
 
   setActiveNote(note: InstrumentNote) {
+    this.box = this.notesBox.nativeElement.getBoundingClientRect()
     if (this.dragging) {
       return;
     }
