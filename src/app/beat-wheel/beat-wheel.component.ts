@@ -107,7 +107,7 @@ export class BeatWheelComponent implements OnInit {
     this.context = new (window['AudioContext'])();
     // this.context.resume();
     setInterval(this.reposition, 7200);
-    this.sampleLoader('../../assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
+    this.sampleLoader('/assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
       var context = this.context;
       var instrumentNames = this.instrumentNames;
       var instruments = this.instruments;
@@ -160,18 +160,13 @@ export class BeatWheelComponent implements OnInit {
 
   
   async sampleLoader(url: string, context: AudioContext, callback: CallableFunction) {
-    // var fileInput = $(url);
-    // var request = new XMLHttpRequest();
-    // request.open('get', url, true);
-    // request.responseType = 'arraybuffer';
-    // request.onload = function() {
-    var response = await fetch(url);
-    var data = await response.arrayBuffer();
-    context.decodeAudioData(data, (buffer: AudioBuffer) =>  {
-        callback(buffer);
-    });
-    // };
-    // request.send();
+    fetch(url)
+      .then(response => response.arrayBuffer())
+      .then(data => {
+        context.decodeAudioData(data, (buffer: AudioBuffer) =>  {
+          callback(buffer);
+        });
+      })
   };
 
   changeScale(s: number) {

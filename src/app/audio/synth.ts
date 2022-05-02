@@ -36,7 +36,7 @@ export class Synth {
             if (fade==0) {
                 gain.gain.setValueAtTime(volume*0.1, time+length-0.01);
             } else {
-                gain.gain.setValueAtTime(volume*0.1, time+length-(0.05*fade));
+                gain.gain.setValueAtTime(volume*0.1, time+length-((length/10)*fade));
             }
             gain.gain.linearRampToValueAtTime(0.0001, time+length);
 
