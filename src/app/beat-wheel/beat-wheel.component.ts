@@ -66,7 +66,7 @@ export class BeatWheelComponent implements OnInit {
     if (this.spin) {
       this.spin = false;
       clearInterval(this.loop);
-      this.context = new (window['AudioContext'])();
+      this.context = new (window['AudioContext'] || (window as any)['webkitAudioContext'])();
       this.playSounds();
     }   
   }
