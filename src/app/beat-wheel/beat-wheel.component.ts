@@ -66,12 +66,7 @@ export class BeatWheelComponent implements OnInit {
     if (this.spin) {
       this.spin = false;
       clearInterval(this.loop);
-      // if('webkitAudioContext' in window) {
-      //   this.context = new (window as any)['webkitAudioContext']()
-      // } else {
-      // this.context = new window['AudioContext']();
       this.context = new AudioContext;
-      // }
       this.playSounds(); 
     }   
   }
@@ -109,7 +104,6 @@ export class BeatWheelComponent implements OnInit {
 
   playSounds() {
     this.spin = true;
-    // this.context = new (window['AudioContext'])();
     this.context.resume();
     setInterval(this.reposition, 7200);
     this.sampleLoader('assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
