@@ -23,7 +23,7 @@ export class BeatWheelComponent implements OnInit {
   instruments: Array<Instrument> = []
   activeInstrument: Instrument = new Instrument;
   bpm: number = 100;
-  context: any;
+  context: AudioContext = new AudioContext;
   modalOpen: boolean = true;
   controlModal: boolean = false;
   consent1: boolean = false;
@@ -66,7 +66,11 @@ export class BeatWheelComponent implements OnInit {
     if (this.spin) {
       this.spin = false;
       clearInterval(this.loop);
-      this.context = new (window['AudioContext'] || (window as any)['webkitAudioContext'])();
+      if('webkitAudioContext' in window) {
+        this.context = new (window as any)['webkitAudioContext']()
+      } else {
+        this.context = new window['AudioContext']();
+      }
       this.playSounds();
     }   
   }
