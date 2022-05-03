@@ -6,6 +6,7 @@ import { Snare } from '../audio/snare';
 import { HiHat } from '../audio/hi-hat';
 import { Synth } from '../audio/synth';
 import { X808 } from '../audio/808';
+import { waitForAsync } from '@angular/core/testing';
 
 @Component({
   selector: 'app-beat-wheel',
@@ -85,9 +86,7 @@ export class BeatWheelComponent implements OnInit {
     this.notesChanged.emit();
     this.clearAll.emit();
     if (this.spin) {
-      this.spin = false;
-      clearInterval(this.loop);
-      this.context = new AudioContext;
+      this.stop();
     }
   }
 
@@ -97,16 +96,9 @@ export class BeatWheelComponent implements OnInit {
     this.context = new AudioContext;
   }
 
-  reposition() {
-    this.showAll = false;
-    setTimeout(()=>{this.showAll = true}, 0);
-  }
-
-  playSounds() {
-    this.spin = true;
+  async playSounds() {
     this.context.resume();
-    setInterval(this.reposition, 7200);
-    this.sampleLoader('assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
+    await this.sampleLoader('assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
       var context = this.context;
       var instrumentNames = this.instrumentNames;
       var instruments = this.instruments;
@@ -155,6 +147,7 @@ export class BeatWheelComponent implements OnInit {
       }
       this.loop = setInterval(play, 100);
     });
+    setTimeout(()=>this.spin = true, 50)
   }
 
   
