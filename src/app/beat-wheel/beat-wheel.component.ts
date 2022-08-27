@@ -25,7 +25,7 @@ export class BeatWheelComponent implements OnInit {
   activeInstrument: Instrument = new Instrument;
   bpm: number = 100;
   context: AudioContext = new AudioContext;
-  modalOpen: boolean = true;
+  modalOpen: boolean = false;
   controlModal: boolean = false;
   consent1: boolean = false;
   consent2: boolean = false;
