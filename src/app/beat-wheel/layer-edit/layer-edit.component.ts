@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild, EventEmitter, AfterViewInit, OnInit, HostListener, Renderer2, Output } from '@angular/core';
-import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
+import { CdkDragEnd, CdkDragStart, CdkDragMove } from '@angular/cdk/drag-drop';
 import { Instrument} from 'src/app/models/instrument.model';
 
 @Component({
@@ -22,17 +22,22 @@ export class LayerEditComponent implements OnInit, AfterViewInit {
   @Output() editActive = new EventEmitter();
   @Output() soloActive = new EventEmitter();
   @Output() notesChanged = new EventEmitter();
+  @Output() deselectInstrument = new EventEmitter();
 
   tempos = [1,2,3]
   top: number = 0;
   left: number = 0;
   resized: boolean = false;
+  showPitchAndFade: boolean = false;
+  pitchAndFadeLeft: boolean = false;
+  pitchAndFadeBottom: boolean = false;
+  showVolume: boolean = false;
   clear = new EventEmitter();
 
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any){
-    this.resized = true;
+    this.setPosition(this.instrument.pitch, this.instrument.fade);
   }
 
   constructor(private renderer: Renderer2) { }
@@ -47,6 +52,7 @@ export class LayerEditComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.resized = true;
     this.setPosition(this.instrument.pitch, this.instrument.fade);
   }
 
@@ -57,6 +63,10 @@ export class LayerEditComponent implements OnInit, AfterViewInit {
 
   changeVolume(event: any) {
     this.instrument.volume = event.target.value * 10;
+    this.showVolume = true;
+    setTimeout(() => {
+      this.showVolume = false;
+    }, 1000)
   }
 
   editToggle() {
@@ -92,13 +102,25 @@ export class LayerEditComponent implements OnInit, AfterViewInit {
     }
   }
 
-  dragEnd($event: CdkDragEnd) {
+  dragMove($event: CdkDragMove) {
+    this.showPitchAndFade = true;
+
     var piePos = this.getPosition();
     var plane = this.elementView.nativeElement.getBoundingClientRect();
 
-    this.instrument.fade = Math.round(piePos.x/plane.width * 10) 
-    this.instrument.pitch = Math.round(10-piePos.y/plane.height * 10) 
+    this.instrument.fade = Math.round(piePos.x/plane.width * 10); 
+    this.instrument.pitch = Math.round(10-piePos.y/plane.height * 10); 
+  }
 
+  dragEnd($event: CdkDragEnd) {
+    this.showPitchAndFade = false;
+
+    var piePos = this.getPosition();
+    var plane = this.elementView.nativeElement.getBoundingClientRect();
+
+    this.pitchAndFadeLeft = piePos.x/plane.width > 0.5;
+    this.pitchAndFadeBottom = piePos.y/plane.height < 0.5;
+    
     // console.log("Pitch: " + this.instrument.pitch);
     // console.log("Fade: " + this.instrument.fade);
   }

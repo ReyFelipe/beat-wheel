@@ -169,7 +169,8 @@ export class BeatWheelComponent implements OnInit {
   }
 
   calculatePieSize(i: Instrument) {
-    var size = ((this.instruments.indexOf(i)+1)*100).toString() + 'px';
+    var multiplier = window.innerWidth > 500 ? 100 : 100 - Math.ceil((500 - window.innerWidth) / 50)*10;
+    var size = ((this.instruments.indexOf(i)+1)*multiplier).toString() + 'px';
     var z = (this.instruments.length - (this.instruments.indexOf(i)+1)).toString();
     var dimensions = {'height': size, 'width': size, 'z-index': z}
     return dimensions
@@ -189,6 +190,11 @@ export class BeatWheelComponent implements OnInit {
     this.mTop = 40 - (3.3*this.activeInstrument.pitch);
     this.mLeft = 9 + (2.1*this.activeInstrument.fade);
     this.instrumentChange.emit(i);
+  }
+
+  deselectInstrument() {
+    this.activeInstrument = new Instrument;
+    this.instrumentChange.emit(this.activeInstrument);
   }
 
   soloActive(i: Instrument) {
