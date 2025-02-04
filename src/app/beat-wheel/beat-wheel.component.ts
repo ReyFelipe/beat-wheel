@@ -9,9 +9,10 @@ import { X808 } from '../audio/808';
 import { waitForAsync } from '@angular/core/testing';
 
 @Component({
-  selector: 'app-beat-wheel',
-  templateUrl: './beat-wheel.component.html',
-  styleUrls: ['./beat-wheel.component.scss']
+    selector: 'app-beat-wheel',
+    templateUrl: './beat-wheel.component.html',
+    styleUrls: ['./beat-wheel.component.scss'],
+    standalone: false
 })
 export class BeatWheelComponent implements OnInit {
   

@@ -7,9 +7,10 @@ import { not } from '@angular/compiler/src/output/output_ast';
 
 
 @Component({
-  selector: 'app-bar-view',
-  templateUrl: './bar-view.component.html',
-  styleUrls: ['./bar-view.component.scss']
+    selector: 'app-bar-view',
+    templateUrl: './bar-view.component.html',
+    styleUrls: ['./bar-view.component.scss'],
+    standalone: false
 })
 export class BarViewComponent implements OnInit, AfterViewInit {
 

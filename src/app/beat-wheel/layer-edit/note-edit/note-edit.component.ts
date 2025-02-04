@@ -3,9 +3,10 @@ import { Instrument } from 'src/app/models/instrument.model';
 import { InstrumentNote } from 'src/app/models/instrument-note.model';
 
 @Component({
-  selector: 'app-note-edit',
-  templateUrl: './note-edit.component.html',
-  styleUrls: ['./note-edit.component.scss']
+    selector: 'app-note-edit',
+    templateUrl: './note-edit.component.html',
+    styleUrls: ['./note-edit.component.scss'],
+    standalone: false
 })
 export class NoteEditComponent implements OnInit {
 

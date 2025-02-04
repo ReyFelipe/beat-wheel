@@ -3,9 +3,10 @@ import { CdkDragEnd, CdkDragStart, CdkDragMove } from '@angular/cdk/drag-drop';
 import { Instrument} from 'src/app/models/instrument.model';
 
 @Component({
-  selector: 'app-layer-edit',
-  templateUrl: './layer-edit.component.html',
-  styleUrls: ['./layer-edit.component.scss']
+    selector: 'app-layer-edit',
+    templateUrl: './layer-edit.component.html',
+    styleUrls: ['./layer-edit.component.scss'],
+    standalone: false
 })
 export class LayerEditComponent implements OnInit, AfterViewInit {
 

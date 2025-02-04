@@ -3,9 +3,10 @@ import { Instrument } from 'src/app/models/instrument.model';
 import { InstrumentNote } from 'src/app/models/instrument-note.model';
 
 @Component({
-  selector: 'app-beat-layer',
-  templateUrl: './beat-layer.component.html',
-  styleUrls: ['./beat-layer.component.scss']
+    selector: 'app-beat-layer',
+    templateUrl: './beat-layer.component.html',
+    styleUrls: ['./beat-layer.component.scss'],
+    standalone: false
 })
 export class BeatLayerComponent implements OnInit {
 
