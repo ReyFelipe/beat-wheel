@@ -41,7 +41,7 @@ export class SavedWheelsComponent {
           });
           this.wheelsLoading = false;
         },
-        error:err => {
+        error:(err:any) => {
           if (err.status==401) {
             this.toastr.error('Session expired. Please log in again', 'Unauthorized');
             localStorage.clear();
@@ -62,7 +62,7 @@ export class SavedWheelsComponent {
           this.toastr.success('Wheel deleted successfully');
           this.wheels = this.wheels.filter(w => w.id != id);
         },
-        error:err => {
+        error:(err:any) => {
           if (err.status==401) {
             this.toastr.error('Session expired. Please log in again', 'Unauthorized');
             localStorage.removeItem('token');

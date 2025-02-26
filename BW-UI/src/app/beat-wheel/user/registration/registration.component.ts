@@ -69,13 +69,13 @@ export class RegistrationComponent {
                 localStorage.setItem('token', res.token);
                 this.registrationSuccessful.emit();
               },
-              error:err => {
+              error:(err:any) => {
                   this.toastr.error('Error during login. Please try logging in manually', 'Login Failed');
                   console.log('error during login:\n', err)
               }
             });
         },
-        error:err => {
+        error:(err:any) => {
           if (err.error.errors) 
             err.error.errors.forEach((x:any) => {
               switch(x.code) {

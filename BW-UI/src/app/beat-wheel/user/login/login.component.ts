@@ -43,7 +43,7 @@ export class LoginComponent {
           this.toastr.success('Login Successful');
           // TODO: Subscribe to local storage instead of using variables
         },
-        error:err => {
+        error:(err:any) => {
           if (err.status==400)
             this.toastr.error('Incorrect email or password', 'Login Failed');
           else 

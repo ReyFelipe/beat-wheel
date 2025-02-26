@@ -97,12 +97,12 @@ export class BeatWheelComponent implements OnInit {
           this.instruments = wheelObject.layers;
           this.toastr.info('Saved wheel loaded');
         },
-        error:err => {
+        error:(err:any) => {
           if (err.status==401) {
             this.toastr.error('Session expired. Please log in again', 'Unauthorized');
             localStorage.clear();
-            this.loginModal = true;
             this.initialise();
+            this.loginModal = true;
           } 
           else {
             console.log('error during get wheel:\n', err);
@@ -117,6 +117,8 @@ export class BeatWheelComponent implements OnInit {
   }
 
   initialise() {
+    this.editing = false;
+    this.instruments = [];
     this.scaleIndex = Math.floor(Math.random()*3);
     for (let i=0; i<this.instrumentNames.length; i++) {
       var newInstrument = new Instrument();
@@ -134,8 +136,7 @@ export class BeatWheelComponent implements OnInit {
   }
 
   reset() {
-    this.editing = false;
-    this.instruments = [];
+    this.wheelId = "";
     this.ngOnInit();
     if (this.spin) {
       this.spin = false;
@@ -299,7 +300,7 @@ export class BeatWheelComponent implements OnInit {
         next:(res:any) => {
           this.toastr.success('Wheel saved successfully');
         },
-        error:err => {
+        error:(err:any) => {
           this.toastr.error(err.status == 400 ? err.message : 'Unknown error occured', 'Save Failed');
           console.log('error during save:\n', err)
         }
@@ -312,7 +313,7 @@ export class BeatWheelComponent implements OnInit {
           this.toastr.success('Wheel saved successfully');
           this.wheelId = res.id;
         },
-        error:err => {
+        error:(err:any) => {
           this.toastr.error('Unknown error occured', 'Save Failed');
           console.log('error during save:\n', err)
         }
