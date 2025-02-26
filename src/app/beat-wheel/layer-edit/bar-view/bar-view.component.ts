@@ -1,16 +1,17 @@
-import { Component, ElementRef, OnInit, Input, ViewChild, Output, EventEmitter, Renderer2, AfterViewInit } from '@angular/core';
-import { CdkDragMove, CdkDragEnd } from '@angular/cdk/drag-drop';
+import { Component, ElementRef, OnInit, Input, ViewChild, Output, EventEmitter, Renderer2, AfterViewInit, input } from '@angular/core';
+import { CdkDragMove, CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
 import { InstrumentNote } from 'src/app/models/instrument-note.model';
 import { Instrument} from 'src/app/models/instrument.model';
 import { DomSanitizer } from "@angular/platform-browser";
-import { not } from '@angular/compiler/src/output/output_ast';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
     selector: 'app-bar-view',
     templateUrl: './bar-view.component.html',
     styleUrls: ['./bar-view.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, DragDropModule]
 })
 export class BarViewComponent implements OnInit, AfterViewInit {
 
@@ -18,11 +19,13 @@ export class BarViewComponent implements OnInit, AfterViewInit {
 
   @Input() instrument = new Instrument;
   @Input() editing: boolean = false;
-  @Input() loop: boolean = false;
+  // @Input() loop: boolean = false;
   @Input() clearAll = new EventEmitter();
   @Output() exit = new EventEmitter();
   @Output() notesChanged = new EventEmitter();
 
+  loop = input<boolean>(false);
+  
   markers: Array<number> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
   spaceIndexes: Array<number> = []
   activeNote: InstrumentNote = new InstrumentNote;

@@ -11,6 +11,13 @@
     }
 }
 
+.background {
+    background-color: black;
+    opacity: 0.7;
+    z-index: 30;
+    top: 0;
+}
+
 .hidden {
     opacity: 0;
     z-index: -10 !important;

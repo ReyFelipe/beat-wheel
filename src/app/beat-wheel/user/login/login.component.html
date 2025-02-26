@@ -1,0 +1,21 @@
+<h2 class="mh2 my-4">Log In</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+        <label class="float-start mb-2">Email</label>
+        <input type="text" class="form-control text-white bg-black" formControlName="email">
+        <div class="error-feedback" *ngIf="hasDisplayableError('email')">
+            Please enter your email address.
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="float-start mb-2">Password</label>
+        <input type="password" class="form-control text-white bg-black" formControlName="password">
+        <div class="error-feedback" *ngIf="hasDisplayableError('password')">
+            Please enter your password.
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary whiteBtn w-100 mt-3">
+        Log In
+    </button>
+</form>

@@ -34,7 +34,7 @@
                 <div #pie [ngClass]="{'faded': editing}" class="pie position-absolute" cdkDrag cdkDragBoundary=".graph-box-inner" 
                 (cdkDragStarted)="dragStart($event)" (cdkDragMoved)="dragMove($event)" (cdkDragEnded)="dragEnd($event)">
                     <div class="line d-flex position-absolute"></div>
-                    <div [ngClass]="{'spin': spin}" [ngStyle]="{'animation-duration': 14.4/instrument.tempo + 's'}">
+                    <div [ngClass]="{'spin': spin()}" [ngStyle]="{'animation-duration': 14.4/instrument.tempo + 's'}">
                         <app-note-edit *ngFor="let note of instrument.notes" [instrument]="instrument" [note]="note" [notesChanged]="notesChanged"></app-note-edit>
                     </div>
                     <div *ngIf="showPitchAndFade" [ngClass]="{'left': pitchAndFadeLeft, 'bottom': pitchAndFadeBottom}" class="d-flex flex-column position-absolute text-white pitch-and-fade">
@@ -46,7 +46,7 @@
         </div>
     
         <div [ngClass]="{'hidden': !editing}" class="bar-view position-absolute w-75 h-50">
-            <app-bar-view [instrument]="instrument" [clearAll]="clear" [editing]="editing" [loop]="spin" (notesChanged)="notesChanged.emit()" (exit)="editToggle()"></app-bar-view>
+            <app-bar-view [instrument]="instrument" [clearAll]="clear" [editing]="editing" [loop]="spin()" (notesChanged)="notesChanged.emit()" (exit)="editToggle()"></app-bar-view>
         </div>
     
         <input (change)=changeVolume($event) class="mt-4 volume" type="range" min="0.0" max="1.0" step="0.01"

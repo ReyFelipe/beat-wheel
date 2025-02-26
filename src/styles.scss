@@ -1,8 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+// $theme-colors: (
+//   "primary": #ff4136,
+// );
+//@import "../node_modules/bootstrap/scss/bootstrap";
 
 html, body {
     height: 100%;
-    background-color: #111111;
+    background-color: #111111 !important;
 
     .whiteBtn, .controlBtn {
         background-color: white;
@@ -40,5 +44,39 @@ html, body {
     
     .playBtn.active, .playBtn:active {
         font-weight: bold;
+    }
+
+    .close {
+        background: none;
+        border: none;
+        color: white;
+
+        &:hover {
+            color: orange;
+        }
+    }
+
+    .mp1 .close {
+        top: 30px;
+        right: 30px;
+    }
+
+    ::placeholder, ::-ms-input-placeholder, ::-webkit-input-placeholder, :-moz-placeholder,
+    ::-moz-placeholder {
+        color: white !important;
+        opacity: 0.75;
+    }
+
+    .error-feedback {
+        font-size: 0.9rem;
+        color: crimson;
+        margin: 0.3rem !important;
+        margin-top: 0.1rem !important;
+        float: right;
+        text-align: right;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
     }
 }

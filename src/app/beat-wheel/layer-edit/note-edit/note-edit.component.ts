@@ -1,12 +1,14 @@
 import { Component, OnInit, Input, EventEmitter } from '@angular/core';
 import { Instrument } from 'src/app/models/instrument.model';
 import { InstrumentNote } from 'src/app/models/instrument-note.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-note-edit',
     templateUrl: './note-edit.component.html',
     styleUrls: ['./note-edit.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule]
 })
 export class NoteEditComponent implements OnInit {
 

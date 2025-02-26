@@ -1,21 +1,57 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Instrument } from '../models/instrument.model';
 import { NoteTable } from 'src/app/models/noteTable';
+import { Wheel } from 'src/app/models/wheel.model';
 import { Kick } from '../audio/kick';
 import { Snare } from '../audio/snare';
 import { HiHat } from '../audio/hi-hat';
 import { Synth } from '../audio/synth';
 import { X808 } from '../audio/808';
-import { waitForAsync } from '@angular/core/testing';
+
+import { BeatLayerComponent } from './beat-layer/beat-layer.component';
+import { LayerEditComponent } from './layer-edit/layer-edit.component';
+import { ModalComponent } from '../reusables/modal/modal.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RegistrationComponent } from './user/registration/registration.component';
+import { LoginComponent } from './user/login/login.component';
+import { SavedWheelsComponent } from './saved-wheels/saved-wheels.component';
+import { WheelService } from 'src/app/services/wheel.service';
+import { trigger, style, animate, transition, query } from '@angular/animations';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-beat-wheel',
     templateUrl: './beat-wheel.component.html',
     styleUrls: ['./beat-wheel.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [
+      CommonModule,
+      BeatLayerComponent,
+      LayerEditComponent,
+      RegistrationComponent,   
+      LoginComponent, 
+      SavedWheelsComponent,
+      ModalComponent,
+      FormsModule
+    ],
+    animations: [
+      trigger('modalFadeIn', [
+        transition('* <=> *', [
+          query(':enter', [
+            style({ opacity: 0, zIndex: 30 }),
+            animate('0.5s ease-in-out', style({ opacity: 1, zIndex: 30 }))
+          ], { optional: true }),
+          query(':leave', [
+            style({ opacity: 1, zIndex: 30 }),
+            animate('0.5s ease-in-out', style({ opacity: 0, zIndex: 30 }))
+          ], { optional: true })
+        ])
+      ])
+    ]
 })
 export class BeatWheelComponent implements OnInit {
-  
+  wheelId: string = localStorage.getItem('wheelId') ?? "";
   instrumentNames = ['Kick', '808', 'Snare', 'Hi-Hat', 'Synth']
   instrumentColours = [['rgb(218, 145, 218)','purple'], ['rgb(175, 175, 255)','darkblue','blue','rgb(0, 183, 255)','turquoise'], ['rgb(170, 233, 170)','green'], 
   ['rgb(255, 255, 230)', 'rgb(255, 238, 0)'], ['rgb(255, 190, 190)','darkred', 'red', 'rgb(231, 0, 108)','rgb(223, 87, 155)']]
@@ -28,9 +64,14 @@ export class BeatWheelComponent implements OnInit {
   context: AudioContext = new AudioContext;
   modalOpen: boolean = false;
   controlModal: boolean = false;
+  registrationModal: boolean = false;
+  loginModal: boolean = false;
+  savedWheelsModal: boolean = false;
   consent1: boolean = false;
   consent2: boolean = false;
   spin: boolean = false;
+  loggedIn: boolean = localStorage.getItem('token') !== null;
+  
   editing: boolean = false;
   solo: boolean = false;
   mTop: number = 0;
@@ -42,9 +83,40 @@ export class BeatWheelComponent implements OnInit {
   notesChanged = new EventEmitter();
   clearAll = new EventEmitter();
 
-  constructor() { }
+  constructor(
+    private wheelService: WheelService,
+    private toastr: ToastrService
+  ){}
 
   ngOnInit(): void {
+    if (this.wheelId) {
+      this.wheelService.getWheel(this.wheelId).subscribe({
+        next:async(wheel:any) => {
+          let wheelObject = new Wheel(wheel.id, wheel.layersJson, wheel.createdAt, wheel.modifiedAt)
+          this.scaleIndex = wheelObject.layers[0].scaleIndex;
+          this.instruments = wheelObject.layers;
+          this.toastr.info('Saved wheel loaded');
+        },
+        error:err => {
+          if (err.status==401) {
+            this.toastr.error('Session expired. Please log in again', 'Unauthorized');
+            localStorage.clear();
+            this.loginModal = true;
+            this.initialise();
+          } 
+          else {
+            console.log('error during get wheel:\n', err);
+            this.toastr.error('There was a problem getting your wheel', 'Error');
+            this.initialise();
+          }   
+        }
+      });
+    } else {
+      this.initialise();
+    }
+  }
+
+  initialise() {
     this.scaleIndex = Math.floor(Math.random()*3);
     for (let i=0; i<this.instrumentNames.length; i++) {
       var newInstrument = new Instrument();
@@ -214,5 +286,56 @@ export class BeatWheelComponent implements OnInit {
     }
   }
 
+  openSavedWheels() {
+    this.stop();
+    this.savedWheelsModal = true;
+  }
+
+  saveWheel() {
+    if (this.wheelId) {
+      this.wheelService.updateWheel(
+        new Object({Id: this.wheelId, LayersJson: JSON.stringify(this.instruments)}))
+      .subscribe({
+        next:(res:any) => {
+          this.toastr.success('Wheel saved successfully');
+        },
+        error:err => {
+          this.toastr.error(err.status == 400 ? err.message : 'Unknown error occured', 'Save Failed');
+          console.log('error during save:\n', err)
+        }
+      });
+    } else {
+      this.wheelService.createWheel(
+        new Object({Id: "", LayersJson: JSON.stringify(this.instruments)}))
+      .subscribe({
+        next:(res:any) => {
+          this.toastr.success('Wheel saved successfully');
+          this.wheelId = res.id;
+        },
+        error:err => {
+          this.toastr.error('Unknown error occured', 'Save Failed');
+          console.log('error during save:\n', err)
+        }
+      });
+    }
+  }
+
+  selectWheel(wheel:Wheel) {
+    localStorage.setItem('wheelId', wheel.id)
+    this.wheelId = wheel.id;
+
+    this.deselectInstrument();
+    this.scaleIndex = wheel.layers[0].scaleIndex;
+    this.instruments = wheel.layers;
+    this.notesChanged.emit();
+
+    this.savedWheelsModal = false;
+    this.toastr.info('Saved wheel loaded');
+  }
+
+  onLogout() {
+    localStorage.clear();
+    window.location.reload();
+  }
 }
 

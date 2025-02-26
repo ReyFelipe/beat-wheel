@@ -1,12 +1,7 @@
-<!-- <a class="finishLink" (click)="stop()" href="https://forms.office.com/Pages/ResponsePage.aspx?id=i9hQcmhLKUW-RNWaLYpvlCXWBXp261NJvh8j9BmJLtJUQUpXT1VTOFBMTjlKMkZCWTRTSEdFMUwwRS4u" target="_blank" rel="noopener noreferrer">
-    <button type="button" class="position-absolute finish btn btn-primary whiteBtn m-2">Finish</button>
-</a> -->
-
-
 <div *ngIf="showAll" class="row m-0 h-100">
     <div class="display d-flex col-12 col-lg-6 h-100 align-items-center justify-content-center">
         <div class="topControls col-12 col-lg-6 position-absolute px-2 px-sm-5 px-lg-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
-            <div class="d-flex flex-row w-100 m-5 mb-0 mb-lg-5">
+            <div class="d-flex flex-row position-relative w-100 m-5 mb-0 mb-lg-5">
                 <div class="d-flex flex-row flex-lg-column justify-content-between col-12 col-lg-auto">
                     <button type="button" [ngClass]="{'active': spin}" class="btn btn-primary whiteBtn playBtn m-2" (click)="spin ? stop() : playSounds()">
                         <span class="d-none d-md-inline">{{spin ? 'Stop' : 'Play'}} </span>
@@ -17,14 +12,36 @@
                         <button type="button" class="btn btn-primary whiteBtn m-2" (click)="reset()">Randomise</button>
                     </div>
                 </div>
-                <button type="button" (click)="controlModal=true" class="d-none d-lg-inline btn h-25 my-auto controlModalBtn btn-primary grayBtn mx-2"><i class="fas fa-question"></i></button>
+                <button type="button" class="d-none d-lg-inline btn h-25 my-auto controlModalBtn btn-primary grayBtn mx-2"
+                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a type="button" class="dropdown-item" (click)="controlModal=true">Help</a></li>
+                    <li><a type="button" class="dropdown-item" (click)="loggedIn ? saveWheel() : registrationModal=true">Save wheel</a></li>
+                    <li *ngIf="loggedIn"><a type="button" class="dropdown-item" (click)="openSavedWheels()">Load Wheel</a></li>
+                    <li *ngIf="loggedIn"><a type="button" class="dropdown-item" (click)="onLogout()">Log Out</a></li>
+                    <li *ngIf="!loggedIn"><a type="button" class="dropdown-item" (click)="loginModal=true">Log in</a></li>
+                </ul>
             </div>
-
-            <div class="scaleControl d-flex flex-row flex-lg-column flex-xl-row w-100 me-3 me-lg-5 mt-2 mt-lg-0 justify-content-end align-items-center justify-content-xl-end">
-                <span class="me-2 me-lg-0 me-xl-2">Scale</span>
-                <div class="text-center">
-                    <button *ngFor="let s of scales" [ngClass]="{'active': scaleIndex+1==s}" 
-                    (click)="changeScale(s)" class="scale">{{s}}</button>
+            <div class="d-flex w-100 flex-row justify-content-between">
+                <button type="button" class="d-lg-none btn h-25 my-auto controlModalBtn btn-primary grayBtn mx-2"
+                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a type="button" class="dropdown-item" (click)="controlModal=true">Help</a></li>
+                    <li><a type="button" class="dropdown-item" (click)="loggedIn ? saveWheel() : registrationModal=true">Save wheel</a></li>
+                    <li *ngIf="loggedIn"><a type="button" class="dropdown-item" (click)="openSavedWheels()">Load Wheel</a></li>
+                    <li *ngIf="loggedIn"><a type="button" class="dropdown-item" (click)="onLogout()">Log Out</a></li>
+                    <li *ngIf="!loggedIn"><a type="button" class="dropdown-item" (click)="loginModal=true">Log in</a></li>
+                </ul>
+                <div class="scaleControl d-flex flex-row flex-lg-column flex-xl-row w-100 me-3 me-lg-5 mt-2 mt-lg-0 justify-content-end align-items-center justify-content-xl-end">
+                    <span class="me-2 me-lg-0 me-xl-2">Scale</span>
+                    <div class="text-center">
+                        <button *ngFor="let s of scales" [ngClass]="{'active': scaleIndex+1==s}" 
+                        (click)="changeScale(s)" class="scale">{{s}}</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -32,7 +49,7 @@
 
         <div class="line d-flex position-absolute"></div>
         <div *ngFor="let instrument of instruments" class="wheel d-flex align-items-center justify-content-center">
-            <app-beat-layer [instrument]="instrument" [activeInstrument]="instrumentChange" [spin]="spin" (selectInstrument)="selectInstrument(instrument)"
+            <app-beat-layer [instrument]="instrument" [activeInstrument]="instrumentChange" [spin]='spin' [savedWheel]="wheelId ? true : false" (selectInstrument)="selectInstrument(instrument)"
             [notesChanged]="notesChanged" class="layer d-flex position-absolute" [ngStyle]="calculatePieSize(instrument)"></app-beat-layer>
         </div>
 
@@ -56,65 +73,58 @@
 </div>
 
 
-<app-modal *ngIf="modalOpen" [multipage]="true">
-    <div class="mp1 text-center">
-        <h1 class="mh1">Beat Wheel</h1>
-        <h2 class="mh2 my-3">Overview</h2>
-        <p class="mp">Thank-you for taking part in my final year research project! The purpose of this project is to design an application with the potential to remove barriers to entry 
-        for creating digital music. 
-        <p>Feel free to play around for as long as you want, ideally until you've made a track that you're happy with. Use headphones for the best experience.
-        Click the 'Finish' button in the bottom right corner when you're ready, and you'll be taken to a brief questionnaire. Its purpose is to gather
-        some general information about your experience with the beat maker, mainly focusing on how much you enjoyed it, and how easy it was to use.</p>
-        <p>The questionnaire will be completely anonymous, and the answers obtained from research participants will be included in the project report. 
-        Your involvement is of course voluntary, and you can choose to stop at any time without completing the questionnaire.</p>
-    </div>
+<div [@modalFadeIn]="registrationModal">
+    <app-modal *ngIf="registrationModal" class="position-relative">
+        <div class="mp1 text-center">
+            <button class="close position-absolute" (click)="registrationModal=false"><i class="fas fa-xmark fs-5"></i></button>
+            <app-registration (registrationSuccessful)="registrationModal=false; openSavedWheels(); loggedIn=true"></app-registration>
+            <button type="button" (click)="registrationModal=false; loginModal=true;" class="btn btn-primary grayBtn w-100 mt-3">
+                Already registered? Log in
+            </button>
+        </div>
+    </app-modal>
+</div>
 
-    <div class="mp2 text-center">
-        <h2 class="mh2 my-3">Controls</h2>
-        <p class="mp">You can view the Controls at any point by clicking 'Controls' in the bottom right corner,
-            so you can skip this section and come back later if you want. 
-        </p>
-        <p class="mp">Click 'Play' to start the music loop. If for any reason the music falls out of sync with the notes in the view,
-        click 'Stop' then 'Play' again to re-align them. If you're in Safari and there's no sound, switching to Chrome or Firefox may fix the issue.</p>
-        <p class="mp">The circles on the left represent 5 instruments you would commonly hear in a trap beat. From the center: kick, 808, snare, hi-hat, synth.
-        Click any circle (or its label below) to view it on the right side, where you can drag the wheel to change its pitch/fade, or change the individual 
-        notes by clicking 'Edit'. Clicking 'Solo' will isolate that instrument, muting all others.</p>
-        <p class="mp">In the bar graph view, click on a note to select it. Drag the bar across the graph to
-            change its position. Drag the top marker up/down to change the note's volume.
-            If the instrument is '808' or 'Synth', you can use the markers on the left and right to change the note's length.
-            These two instruments also allow you to change the sound of the note by clicking the circles next to 'Note' underneath the graph. 
-        </p>
-    </div>
+<div [@modalFadeIn]="loginModal">
+    <app-modal *ngIf="loginModal" class="position-relative">
+        <div class="mp1 text-center">
+            <button class="close position-absolute" (click)="loginModal=false"><i class="fas fa-xmark fs-5"></i></button>
+            <app-login (loginSuccessful)="loginModal=false; openSavedWheels(); loggedIn=true"></app-login>
+        </div>
+    </app-modal>
+</div>
 
-    <div class="mp3 text-center">
-        <h2 class="mh3">Consent</h2>
-        <p class="my-4">I consent to participating in this research project<input id="checkbox1" class="mx-3" type="checkbox" name="consent1" [(ngModel)]="consent1"></p>
-        <p class="my-4">I consent to my questionnaire answers being used anonymously in the project report<input id="checkbox2" class="mx-3" type="checkbox" name="consent2" [(ngModel)]="consent2"></p>
-    </div>
+<div [@modalFadeIn]="savedWheelsModal">
+    <app-modal *ngIf="savedWheelsModal" class="position-relative">
+        <div class="mp1 text-center">
+            <button class="close position-absolute" (click)="savedWheelsModal=false"><i class="fas fa-xmark fs-5"></i></button>
+            <app-saved-wheels *ngIf="loggedIn" (selectWheel)="selectWheel($event)" (continue)="savedWheelsModal=false;" (unauthorized)="loggedIn=false; savedWheelsModal=false; loginModal=true;"></app-saved-wheels>
+            <button *ngIf="!loggedIn" type="button" (click)="savedWheelsModal=false; loginModal=true;" class="btn btn-primary grayBtn w-100 mt-3">
+                Log in to view saved wheels
+            </button>
+        </div>
+    </app-modal>
+</div>
 
-    <button type="button" class="btn mbtnClose btn-primary whiteBtn m-2" (click)="modalOpen=false" [disabled]="!(consent1 && consent2)">Start</button>
-</app-modal>
+<div [@modalFadeIn]="controlModal">
+    <app-modal *ngIf="controlModal" class="position-relative">
+        <div class="mp1 text-center">
+            <h2 class="mh2 my-3">Controls</h2>
 
+            <p class="mp">Click 'Play' to start the music loop. If for any reason the music falls out of sync with the notes in the view,
+            click 'Stop' then 'Play' again to re-align them. If you're in Safari and there's no sound, switching to Chrome or Firefox may fix the issue.</p>
 
+            <p class="mp">The circles on the left represent 5 instruments you would commonly hear in a trap beat. From the center: kick, 808, snare, hi-hat, synth.
+            Click any circle (or its label below) to view it on the right side, where you can drag the wheel to change its pitch/fade, or change the individual 
+            notes by clicking 'Edit'. Clicking 'Solo' will isolate that instrument, muting all others.</p>
 
-<app-modal *ngIf="controlModal">
-    <div class="mp1 text-center">
-        <h2 class="mh2 my-3">Controls</h2>
+            <p class="mp">In the bar graph view, click on a note to select it. Drag the bar across the graph to
+                change its position. Drag the top marker up/down to change the note's volume.
+                If the instrument is '808' or 'Synth', you can use the markers on the left and right to change the note's length.
+                These two instruments also allow you to change the sound of the note by clicking the circles next to 'Note' underneath the graph. 
+            </p>
+        </div>
 
-        <p class="mp">Click 'Play' to start the music loop. If for any reason the music falls out of sync with the notes in the view,
-        click 'Stop' then 'Play' again to re-align them. If you're in Safari and there's no sound, switching to Chrome or Firefox may fix the issue.</p>
-
-        <p class="mp">The circles on the left represent 5 instruments you would commonly hear in a trap beat. From the center: kick, 808, snare, hi-hat, synth.
-        Click any circle (or its label below) to view it on the right side, where you can drag the wheel to change its pitch/fade, or change the individual 
-        notes by clicking 'Edit'. Clicking 'Solo' will isolate that instrument, muting all others.</p>
-
-        <p class="mp">In the bar graph view, click on a note to select it. Drag the bar across the graph to
-            change its position. Drag the top marker up/down to change the note's volume.
-            If the instrument is '808' or 'Synth', you can use the markers on the left and right to change the note's length.
-            These two instruments also allow you to change the sound of the note by clicking the circles next to 'Note' underneath the graph. 
-        </p>
-    </div>
-
-    <button type="button" class="btn mbtnClose btn-primary whiteBtn m-2" (click)="controlModal=false">Continue</button>
-
-</app-modal>
+        <button type="button" class="btn mbtnClose btn-primary whiteBtn m-2" (click)="controlModal=false">Continue</button>
+    </app-modal>
+</div>

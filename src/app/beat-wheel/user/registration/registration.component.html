@@ -1,0 +1,53 @@
+<h2 class="mh2 my-4">Register to save your wheel</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+        <label class="float-start mb-2">Full name</label>
+        <input type="text" class="form-control text-white bg-black" formControlName="fullName">
+        <div class="error-feedback" *ngIf="hasDisplayableError('fullName') && form.controls.fullName.hasError('required')">
+            Please enter your full name.
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="float-start mb-2">Email</label>
+        <input type="text" class="form-control text-white bg-black" formControlName="email">
+        <div class="error-feedback" *ngIf="hasDisplayableError('email')">
+            <ng-container [ngSwitch]="form.controls.email.errors | firstKey">
+                <div *ngSwitchCase="'required'">
+                    Please enter your email address.
+                </div>
+                <div *ngSwitchCase="'email'">
+                    Please enter a valid email address.
+                </div>   
+            </ng-container>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="float-start mb-2">Password</label>
+        <input type="password" class="form-control text-white bg-black" formControlName="password">
+        <div class="error-feedback" *ngIf="hasDisplayableError('password')">
+            <ng-container [ngSwitch]="form.controls.password.errors | firstKey">
+                <div *ngSwitchCase="'required'">
+                    Please enter your password.
+                </div>
+                <div *ngSwitchCase="'minlength'">
+                    At least 6 characters required.
+                </div>        
+                <div *ngSwitchCase="'pattern'">
+                    One or more special character(s) required.
+                </div>  
+            </ng-container>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="float-start mb-2">Confirm password</label>
+        <input type="password" class="form-control text-white bg-black" formControlName="confirmPassword">
+        <div class="error-feedback" *ngIf="hasDisplayableError('confirmPassword') && form.controls.confirmPassword.hasError('passwordMismatch')">
+            The passwords do not match.
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary whiteBtn w-100 mt-3">
+        Register
+    </button>
+</form>

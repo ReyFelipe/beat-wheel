@@ -1,12 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Instrument } from 'src/app/models/instrument.model';
 import { InstrumentNote } from 'src/app/models/instrument-note.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-beat-layer',
     templateUrl: './beat-layer.component.html',
     styleUrls: ['./beat-layer.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule]
 })
 export class BeatLayerComponent implements OnInit {
 
@@ -14,11 +16,13 @@ export class BeatLayerComponent implements OnInit {
   @Input() activeInstrument = new EventEmitter<Instrument>();
   @Input() notesChanged = new EventEmitter();
   @Input() spin: boolean = false;
+  @Input() savedWheel: boolean = false;
   @Output() selectInstrument = new EventEmitter();
 
   segments: Array<number> = []
-  colours: string = ""
   active: boolean = false;
+  spinner: boolean = false;
+
 
   constructor() { }
 
@@ -26,7 +30,9 @@ export class BeatLayerComponent implements OnInit {
     for (let i=0; i<this.instrument.sections; i++) {
       this.segments.push(i);
     } 
-    this.colours = this.partition();
+    if (!this.savedWheel) {
+      this.partition();
+    }
 
     this.activeInstrument.subscribe(i => {
       if (i != this.instrument) {
@@ -108,7 +114,7 @@ export class BeatLayerComponent implements OnInit {
       colours = colours.slice(0,-1);
       colours+=")";
     }
-    this.colours = colours;
+    this.instrument.pie = colours;
   }
 
   select() {

@@ -1,0 +1,27 @@
+<h2 class="mh2 my-4">Load Wheel</h2>
+
+<div *ngIf="!wheelsLoading">
+    <p *ngIf="wheels && wheels.length > 0"> Click on a saved wheel to continue editing it</p>
+    <p *ngIf="!wheels || wheels.length == 0"> You don't have any saved wheels yet. When you save a wheel you're working on, it 
+        will appear here.
+    </p>  
+</div>
+  
+
+<div class="container p-3 overflow-y-auto">
+    <button *ngIf="!wheelsLoading && (!wheels || wheels.length == 0)" class="btn btn-primary whiteBtn w-100 mt-3" (click)="continue.emit()">
+        Continue
+    </button>
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3" *ngFor="let wheel of wheels; let i = index">
+            <div class="mini-wheel-container cursor-pointer position-relative d-block" (click)="stop(); selectWheel.emit(wheel)" (mouseenter)="playSounds(i)" (mouseleave)="stop()">
+                <button class="d-none delete-wheel btn btn-danger position-absolute" (click)="deleteWheel(wheel.id)">
+                    <i class="fs-6 fas fa-trash-can"></i>
+                </button>
+                <app-mini-wheel class="pe-none" [layers]="wheel.layers" [spin]="wheel.spin"></app-mini-wheel>
+            </div>
+            <p class="my-2">Created: {{wheel.createdAt}}</p>
+        </div>
+    </div>
+</div>
+

@@ -1,12 +1,17 @@
-import { Component, ElementRef, Input, ViewChild, EventEmitter, AfterViewInit, OnInit, HostListener, Renderer2, Output } from '@angular/core';
-import { CdkDragEnd, CdkDragStart, CdkDragMove } from '@angular/cdk/drag-drop';
+import { Component, ElementRef, Input, ViewChild, EventEmitter, AfterViewInit, OnInit, HostListener, Renderer2, Output, input } from '@angular/core';
+import { CdkDragEnd, CdkDragStart, CdkDragMove, DragDropModule } from '@angular/cdk/drag-drop';
 import { Instrument} from 'src/app/models/instrument.model';
+import { CommonModule } from '@angular/common';
+
+import { NoteEditComponent } from './note-edit/note-edit.component';
+import { BarViewComponent } from './bar-view/bar-view.component';
 
 @Component({
     selector: 'app-layer-edit',
     templateUrl: './layer-edit.component.html',
     styleUrls: ['./layer-edit.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [CommonModule, DragDropModule, NoteEditComponent, BarViewComponent]
 })
 export class LayerEditComponent implements OnInit, AfterViewInit {
 
@@ -15,7 +20,7 @@ export class LayerEditComponent implements OnInit, AfterViewInit {
 
 
   @Input() instrument = new Instrument;
-  @Input() spin: boolean = false;
+  // @Input() spin: boolean = false;
   @Input() solo: boolean = false;
   @Input() editing: boolean = false;
   @Input() instrumentChange = new EventEmitter<Instrument>();
@@ -25,6 +30,8 @@ export class LayerEditComponent implements OnInit, AfterViewInit {
   @Output() notesChanged = new EventEmitter();
   @Output() deselectInstrument = new EventEmitter();
 
+  spin = input<boolean>(false);
+  
   tempos = [1,2,3]
   top: number = 0;
   left: number = 0;
