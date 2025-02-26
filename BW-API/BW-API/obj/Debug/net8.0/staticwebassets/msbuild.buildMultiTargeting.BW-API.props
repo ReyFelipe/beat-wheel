@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/BW-API.props" />
+</Project>
