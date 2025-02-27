@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -49,8 +48,6 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services
     .AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-
-// builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 var allowedOrigins = builder.Configuration.GetValue<string>("allowedOrigins")!.Split(",");
 builder.Services.AddCors(options => 
