@@ -1,1 +1,1 @@
-web: dotnet BW-API.dll
+web: dotnet run --project BW-API.csproj
