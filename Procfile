@@ -1,1 +1,1 @@
-web: dotnet run --project BW-API.csproj
+web: dotnet BW-API/heroku_output/BW-API.dll

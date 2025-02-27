@@ -49,18 +49,21 @@ builder.Services
     .AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-var allowedOrigins = builder.Configuration.GetValue<string>("allowedOrigins")!.Split(",");
-builder.Services.AddCors(options => 
-{
-    options.AddDefaultPolicy(policy => 
+if (builder.Environment.IsDevelopment())
+{  
+    var allowedOrigins = builder.Configuration.GetValue<string>("allowedOrigins")!.Split(",");
+    builder.Services.AddCors(options => 
     {
-        policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod();
+        options.AddDefaultPolicy(policy => 
+        {
+            policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod();
+        });
     });
-});
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
-));
+    builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    ));
+}
 
 builder.Services.Configure<IdentityOptions>(options => 
 {
@@ -106,13 +109,13 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         options.RoutePrefix = string.Empty;
     });
+    app.UseCors();
 }
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
