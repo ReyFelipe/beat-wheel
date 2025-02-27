@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BW_API.Controllers
 {
-
+    [Authorize]
     [ApiController]
     public class WheelController : ControllerBase
     {

@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using BW_API.Controllers;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,12 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
+} else {
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    {
+        var match = Regex.Match(Environment.GetEnvironmentVariable("DATABASE_URL") ?? "", @"postgres://(.*):(.*)@(.*):(.*)/(.*)");
+        options.UseNpgsql($"Server={match.Groups[3]};Port={match.Groups[4]};User Id={match.Groups[1]};Password={match.Groups[2]};Database={match.Groups[5]};sslmode=Prefer;Trust Server Certificate=true");
+    });
 }
 
 builder.Services.Configure<IdentityOptions>(options => 
@@ -82,19 +89,14 @@ builder.Services
             ValidateIssuerSigningKey = true,
             NameClaimType = ClaimTypes.NameIdentifier,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                builder.Configuration["AppSettings:JWTSecret"]!
+                Environment.GetEnvironmentVariable("JWTSecret") ?? "MyVerySpecialSecretKeyForAuthentication1329"
             )),
             ValidateIssuer = false,
             ValidateAudience = false
         };
     });
 
-builder.Services.AddAuthorization(options => {
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-        .RequireAuthenticatedUser()
-        .Build();
-    });
+builder.Services.AddAuthorization();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
@@ -116,6 +118,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -125,5 +128,6 @@ app.MapGroup("/api")
    .MapIdentityApi<AppUser>();
 app.MapGroup("/api")
    .MapIdentityUserEndpoints();
+app.MapFallbackToFile("index.html");
 
 app.Run();
