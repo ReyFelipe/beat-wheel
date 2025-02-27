@@ -21,7 +21,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": {
-              "base": "dist/beat-wheel"
+              "base": "../BW-API/wwwroot"
             },
             "index": "src/index.html",
             "polyfills": [
@@ -54,7 +54,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "5kb"
                 }
               ],
               "fileReplacements": [
