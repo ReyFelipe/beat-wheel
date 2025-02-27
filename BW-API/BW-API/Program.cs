@@ -12,39 +12,32 @@ using BW_API.Controllers;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+var isHeroku = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DYNO"));
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    if (isHeroku)
+    {
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    }
+});
+builder.Services.AddHttpsRedirection(options =>
+{
+    if (isHeroku)
+    {
+        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+        options.HttpsPort = 443;
+    };
+});
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Fill in the JWT token",
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new List<String>()
-        }
-    });
-});
 
 builder.Services
     .AddIdentityApiEndpoints<AppUser>()
@@ -52,6 +45,33 @@ builder.Services
 
 if (builder.Environment.IsDevelopment())
 {  
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Fill in the JWT token",
+        });
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id="Bearer"
+                    }
+                },
+                new List<String>()
+            }
+        });
+    });
+
     var allowedOrigins = builder.Configuration.GetValue<string>("allowedOrigins")!.Split(",");
     builder.Services.AddCors(options => 
     {
@@ -113,6 +133,9 @@ if (app.Environment.IsDevelopment())
     });
     app.UseCors();
 }
+
+app.UseForwardedHeaders();
+app.UseHttpsRedirection();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
