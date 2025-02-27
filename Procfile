@@ -1,1 +1,1 @@
-web: dotnet BW-API/heroku_output/BW-API.dll
+web: cd BW-API/BW-API/bin/publish/; ./BW-API --urls http://*:$PORT
