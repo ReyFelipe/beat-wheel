@@ -18,24 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-var isHeroku = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DYNO"));
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    if (isHeroku)
-    {
-        options.KnownNetworks.Clear();
-        options.KnownProxies.Clear();
-    }
-});
-builder.Services.AddHttpsRedirection(options =>
-{
-    if (isHeroku)
-    {
-        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-        options.HttpsPort = 443;
-    };
-});
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -85,11 +67,9 @@ if (builder.Environment.IsDevelopment())
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 } else {
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    {
-        var match = Regex.Match(Environment.GetEnvironmentVariable("DATABASE_URL") ?? "", @"postgres://(.*):(.*)@(.*):(.*)/(.*)");
-        options.UseNpgsql($"Server={match.Groups[3]};Port={match.Groups[4]};User Id={match.Groups[1]};Password={match.Groups[2]};Database={match.Groups[5]};sslmode=Prefer;Trust Server Certificate=true");
-    });
+    builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
+        builder.Configuration.GetConnectionString("HerokuPostgresConnection")
+    ));
 }
 
 builder.Services.Configure<IdentityOptions>(options => 
@@ -109,7 +89,7 @@ builder.Services
             ValidateIssuerSigningKey = true,
             NameClaimType = ClaimTypes.NameIdentifier,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                Environment.GetEnvironmentVariable("JWTSecret") ?? "MyVerySpecialSecretKeyForAuthentication1329"
+                builder.Configuration["AppSettings:JWTSecret"]!
             )),
             ValidateIssuer = false,
             ValidateAudience = false
@@ -134,9 +114,6 @@ if (app.Environment.IsDevelopment())
     app.UseCors();
 }
 
-app.UseForwardedHeaders();
-app.UseHttpsRedirection();
-
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -153,4 +130,4 @@ app.MapGroup("/api")
    .MapIdentityUserEndpoints();
 app.MapFallbackToFile("index.html");
 
-app.Run();
+app.Run(); 
