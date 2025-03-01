@@ -319,6 +319,7 @@ export class BeatWheelComponent implements OnInit {
         next:(res:any) => {
           this.toastr.success('Wheel saved successfully');
           this.wheelId = res.id;
+          localStorage.setItem('wheelId', res.id)
         },
         error:(err:any) => {
           this.toastr.error('Unknown error occured', 'Save Failed');
