@@ -21,7 +21,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": {
-              "base": "../BW-API/wwwroot"
+              "base": "../wwwroot"
             },
             "index": "src/index.html",
             "polyfills": [

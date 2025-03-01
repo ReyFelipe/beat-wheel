@@ -287,6 +287,13 @@ export class BeatWheelComponent implements OnInit {
     }
   }
 
+  registered() {
+    this.registrationModal=false; 
+    this.saveWheel();
+    this.openSavedWheels(); 
+    this.loggedIn=true;
+  }
+
   openSavedWheels() {
     this.stop();
     this.savedWheelsModal = true;

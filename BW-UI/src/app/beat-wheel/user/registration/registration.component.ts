@@ -58,7 +58,6 @@ export class RegistrationComponent {
       .subscribe({
         next:(res:any) => {
           if (res.succeeded)
-            this.form.reset();
             this.isSubmitted = false;
             this.toastr.success('New user created!', 'Registration Successful');
 
@@ -67,6 +66,7 @@ export class RegistrationComponent {
             .subscribe({
               next:(res:any) => {
                 localStorage.setItem('token', res.token);
+                this.form.reset();
                 this.registrationSuccessful.emit();
               },
               error:(err:any) => {

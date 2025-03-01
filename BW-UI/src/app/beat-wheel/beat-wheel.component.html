@@ -77,7 +77,7 @@
     <app-modal *ngIf="registrationModal" class="position-relative">
         <div class="mp1 text-center">
             <button class="close position-absolute" (click)="registrationModal=false"><i class="fas fa-xmark fs-5"></i></button>
-            <app-registration (registrationSuccessful)="registrationModal=false; openSavedWheels(); loggedIn=true"></app-registration>
+            <app-registration (registrationSuccessful)="registered()"></app-registration>
             <button type="button" (click)="registrationModal=false; loginModal=true;" class="btn btn-primary grayBtn w-100 mt-3">
                 Already registered? Log in
             </button>
