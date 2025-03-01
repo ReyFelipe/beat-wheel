@@ -1,1 +1,1 @@
-web: cd BW-API/bin/publish/; ./BW-API --urls http://*:$PORT
+web: cd heroku_output; ./BW-API --urls http://*:$PORT
