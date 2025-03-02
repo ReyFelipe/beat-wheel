@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Wheel } from 'src/app/models/wheel.model';
 import { WheelService } from 'src/app/services/wheel.service';
@@ -25,6 +25,8 @@ export class SavedWheelsComponent {
     context: AudioContext = new AudioContext;
     loop: any;
     wheelsLoading: boolean = true;
+
+    @Input() hihat = new ArrayBuffer();
 
     @Output() unauthorized = new EventEmitter();
     @Output() continue = new EventEmitter();
@@ -83,12 +85,19 @@ export class SavedWheelsComponent {
       clearInterval(this.loop);
       this.context = new AudioContext;
     }
+
+    async prepareHiHatSample(context: AudioContext, callback: CallableFunction) {
+      const hiHatBufferCopy = this.hihat.slice();
+      context.decodeAudioData(hiHatBufferCopy, (buffer: AudioBuffer) =>  {
+        callback(buffer);
+      });
+    };
   
     // TODO: Repeated code - make the below functions reusable?
     async playSounds(index:number) {
       this.stop();
       this.context.resume();
-      await this.sampleLoader('assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
+      await this.prepareHiHatSample(this.context, (buffer: AudioBuffer) => {
         var context = this.context;
         var instrumentNames = this.instrumentNames;
         var instruments = this.wheels[index].layers;

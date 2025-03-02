@@ -50,7 +50,7 @@
         <div class="line d-flex position-absolute"></div>
         <div *ngFor="let instrument of instruments" class="wheel d-flex align-items-center justify-content-center">
             <app-beat-layer [instrument]="instrument" [activeInstrument]="instrumentChange" [spin]='spin' [savedWheel]="wheelId ? true : false" (selectInstrument)="selectInstrument(instrument)"
-            [notesChanged]="notesChanged" class="layer d-flex position-absolute" [ngStyle]="calculatePieSize(instrument)"></app-beat-layer>
+            [notesChanged]="notesChanged" class="layer d-flex position-absolute overflow-hidden" [ngStyle]="calculatePieSize(instrument)"></app-beat-layer>
         </div>
 
         <div class="chooseInstrument position-absolute text-center">
@@ -63,7 +63,7 @@
     </div>
 
     <div *ngFor="let instrument of instruments" [ngClass]="{'hidden': instrument != activeInstrument}" class="edit d-flex col-12 col-lg-6 h-100 align-items-center justify-content-center">
-        <app-layer-edit class="w-100 h-100 d-flex justify-content-center align-items-center" [instrument]="instrument" [instrumentChange]="instrumentChange" (notesChanged)="notesChanged.emit()"
+        <app-layer-edit class="w-100 h-100 d-flex justify-content-center align-items-center overflow-hidden" [instrument]="instrument" [instrumentChange]="instrumentChange" (notesChanged)="notesChanged.emit()"
         [spin]="spin" [clearAll]="clearAll" [editing]="editing" (editActive)="editing=!editing" [solo]="solo" (soloActive)="soloActive(instrument)" (deselectInstrument)="deselectInstrument()"></app-layer-edit>
     </div>
 
@@ -72,6 +72,14 @@
     </div>
 </div>
 
+<div [@modalFadeIn]="introModal">
+    <app-modal *ngIf="introModal" class="position-relative">
+        <div class="mp1 text-center">
+            <h2 class="mh2 my-3">Beat Wheel</h2>
+            <p class="mp">Please turn on your sound</p>
+        </div>
+    </app-modal>
+</div>
 
 <div [@modalFadeIn]="registrationModal">
     <app-modal *ngIf="registrationModal" class="position-relative">
@@ -98,7 +106,7 @@
     <app-modal *ngIf="savedWheelsModal" class="position-relative">
         <div class="mp1 text-center">
             <button class="close position-absolute" (click)="savedWheelsModal=false"><i class="fas fa-xmark fs-5"></i></button>
-            <app-saved-wheels *ngIf="loggedIn" (selectWheel)="selectWheel($event)" (continue)="savedWheelsModal=false;" (unauthorized)="loggedIn=false; savedWheelsModal=false; loginModal=true;"></app-saved-wheels>
+            <app-saved-wheels *ngIf="loggedIn" [hihat]="hihat" (selectWheel)="selectWheel($event)" (continue)="savedWheelsModal=false;" (unauthorized)="loggedIn=false; savedWheelsModal=false; loginModal=true;"></app-saved-wheels>
             <button *ngIf="!loggedIn" type="button" (click)="savedWheelsModal=false; loginModal=true;" class="btn btn-primary grayBtn w-100 mt-3">
                 Log in to view saved wheels
             </button>

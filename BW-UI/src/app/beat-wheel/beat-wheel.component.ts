@@ -64,6 +64,7 @@ export class BeatWheelComponent implements OnInit {
   context: AudioContext = new AudioContext;
   modalOpen: boolean = false;
   controlModal: boolean = false;
+  introModal: boolean = true;
   registrationModal: boolean = false;
   loginModal: boolean = false;
   savedWheelsModal: boolean = false;
@@ -77,6 +78,7 @@ export class BeatWheelComponent implements OnInit {
   mTop: number = 0;
   mLeft: number = 0;
   showAll: boolean = true;
+  hihat: ArrayBuffer = new ArrayBuffer();
   loop: any;
 
   instrumentChange = new EventEmitter<Instrument>();
@@ -88,7 +90,10 @@ export class BeatWheelComponent implements OnInit {
     private toastr: ToastrService
   ){}
 
-  ngOnInit(): void {
+  ngOnInit(): void{
+    setTimeout(()=>this.introModal = false, 1500)
+
+    // Check if a there's a saved wheel to load, and create a new wheel if not
     if (this.wheelId) {
       this.wheelService.getWheel(this.wheelId).subscribe({
         next:async(wheel:any) => {
@@ -114,6 +119,11 @@ export class BeatWheelComponent implements OnInit {
     } else {
       this.initialise();
     }
+
+    // Load hi-hat sample
+    fetch('assets/samples/hihat.wav')
+    .then(response => response.arrayBuffer())
+    .then(data => this.hihat = data);
   }
 
   initialise() {
@@ -172,7 +182,7 @@ export class BeatWheelComponent implements OnInit {
 
   async playSounds() {
     this.context.resume();
-    await this.sampleLoader('assets/samples/hihat.wav', this.context, (buffer: AudioBuffer) => {
+    await this.prepareHiHatSample(this.context, (buffer: AudioBuffer) => {
       var context = this.context;
       var instrumentNames = this.instrumentNames;
       var instruments = this.instruments;
@@ -225,14 +235,11 @@ export class BeatWheelComponent implements OnInit {
   }
 
   
-  async sampleLoader(url: string, context: AudioContext, callback: CallableFunction) {
-    fetch(url)
-      .then(response => response.arrayBuffer())
-      .then(data => {
-        context.decodeAudioData(data, (buffer: AudioBuffer) =>  {
-          callback(buffer);
-        });
-      })
+  async prepareHiHatSample(context: AudioContext, callback: CallableFunction) {
+    const hiHatBufferCopy = this.hihat.slice();
+    context.decodeAudioData(hiHatBufferCopy, (buffer: AudioBuffer) =>  {
+      callback(buffer);
+    });
   };
 
   changeScale(s: number) {
